@@ -1,24 +1,56 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Videojuegos</title>
-</head>
-<body>
-    <h1>Lista de Videojuegos</h1>
-    <form action="/recomendacion" method="post">
-        <ul>
-            {% set counter = 0 %}
-            {% for juego in videojuegos %}
-                <li>
-                    <input type="checkbox" name="juegos_gustados" value="{{ counter }}">
-                    {{ juego.nombre }}
-                </li>
-                {% set counter = counter + 1 %}
-            {% endfor %}
-        </ul>
-        <input type="submit" value="Obtener recomendación">
-    </form>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Videojuegos</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            h1 {
+                color: #333;
+            }
+            form {
+                display: flex;
+                gap: 20px;
+            }
+            select, button, input[type="submit"] {
+                padding: 10px;
+            }
+            #juegos, #favoritos {
+                width: 200px;
+            }
+            #agregar {
+                align-self: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Lista de Videojuegos</h1>
+        <form action="/recomendacion" method="post">
+            <select id="juegos" name="juegos_gustados" multiple size="10">
+                {% for videojuego in videojuegos %}
+                    <option value="{{ loop.index0 }}">{{ videojuego['Name'] }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" id="agregar">Agregar a favoritos</button>
+            <select id="favoritos" name="juegos_favoritos" multiple size="10"></select>
+            <input type="submit" value="Enviar">
+        </form>
+        <script>
+            document.getElementById('agregar').addEventListener('click', function() {
+                var juegos = document.getElementById('juegos');
+                var favoritos = document.getElementById('favoritos');
+                for (var i = 0; i < juegos.options.length; i++) {
+                    var option = juegos.options[i];
+                    if (option.selected) {
+                        favoritos.options.add(new Option(option.text, option.value));
+                        juegos.remove(i);
+                        i--;
+                    }
+                }
+            });
+        </script>
+    </body>
 </html>

@@ -6,10 +6,10 @@
     <title>Recomendación de Videojuegos</title>
 </head>
 <body>
-    <h1>Videojuegos Recomendados</h1>
+    <h2>Recomendaciones para {{ juego }}:</h2>
     <ul>
-        {% for juego in juegos_recomendados %}
-            <li>{{ juego.nombre }}</li>
+        {% for recomendado in recomendados %}
+            <li>{{ recomendado }}</li>
         {% endfor %}
     </ul>
 </body>

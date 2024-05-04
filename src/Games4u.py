@@ -1,40 +1,47 @@
+import pandas as pd
 from flask import Flask, render_template, request
+import os
 
 app = Flask(__name__)
 
-# Lista de videojuegos (nombre, género)
-videojuegos = [
-    {"nombre": "The Legend of Zelda: Breath of the Wild", "genero": "Aventura"},
-    {"nombre": "Super Mario Odyssey", "genero": "Plataforma"},
-    {"nombre": "Red Dead Redemption 2", "genero": "Acción/Aventura"},
-    {"nombre": "The Witcher 3: Wild Hunt", "genero": "RPG"},
-    {"nombre": "Dark Souls III", "genero": "RPG"},
-    {"nombre": "Overwatch", "genero": "FPS"}
-]
+# Leer el archivo Excel y convertirlo en una lista de diccionarios
+current_directory = os.path.dirname(__file__)
+
+# Construye la ruta al archivo Excel en la carpeta 'dataset'
+directory_games= os.path.join(current_directory, '..', 'dataset', 'games.xlsx')
+
+df = pd.read_excel(directory_games)
+
+directory_cluster= os.path.join(current_directory, '..', 'dataset', 'games_clustered.xlsx')
+
+df_cluster = pd.read_excel(directory_cluster)
+
+videojuegos_cluster = df_cluster.to_dict('records')
+
+videojuegos = df.to_dict('records')
 
 @app.route('/')
 def index():
+    # Pasar la lista de videojuegos a la plantilla
     return render_template('index.html', videojuegos=videojuegos)
-
-@app.route('/saludo', methods=['GET', 'POST'])
-def saludo():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        return render_template('saludo.html', nombre=nombre)
-    return render_template('formulario.html')
 
 @app.route('/recomendacion', methods=['POST'])
 def recomendacion():
-    juegos_gustados = request.form.getlist('juegos_gustados')
+    juegos_favoritos = request.form.getlist('juegos_gustados')
     
-    # Aquí podrías implementar tu algoritmo de recomendación
-    # Por ahora, simplemente devolveré los géneros de los juegos seleccionados
-    generos_gustados = [videojuegos[int(i)]['genero'] for i in juegos_gustados]
-
-    # Filtrar videojuegos por género
-    juegos_recomendados = [juego for juego in videojuegos if juego['genero'] in generos_gustados]
-
-    return render_template('recomendacion.html', juegos_recomendados=juegos_recomendados)
+    # Crear un diccionario que mapea cada juego favorito a los juegos recomendados del mismo cluster
+    recomendaciones = {}
+    for i in juegos_favoritos:
+        nombre_juego = videojuegos_cluster[int(i)]['Name']
+        cluster_juego = videojuegos_cluster[videojuegos_cluster['Name'] == nombre_juego]['Cluster'].values[0]
+        juegos_recomendados = videojuegos_cluster[videojuegos_cluster['Cluster'] == cluster_juego]['Name'].tolist()
+        recomendaciones[nombre_juego] = juegos_recomendados
+    
+    # Verificar si se encontraron juegos recomendados
+    if recomendaciones:
+        return render_template('recomendacion.html', recomendaciones=recomendaciones)
+    else:
+        return "No se encontraron juegos recomendados."
 
 if __name__ == '__main__':
     app.run(debug=True)
