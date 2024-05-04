@@ -86,3 +86,4 @@ if about_game_column_index is not None and supported_languages_column_index is n
     print("Se ha creado el archivo 'games_processed.xlsx' con las descripciones procesadas.")
 else:
     print("No se encontró la columna 'About the game' o 'Supported languages' en el archivo Excel.")
+    
