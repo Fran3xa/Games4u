@@ -23,22 +23,33 @@ sorted_games = sorted(games_list, key=lambda x: x["playtime_forever"], reverse=T
 
 most_played_games = sorted_games[:5]
 
-#for game in most_played_games:
-#    print(json.dumps(game, indent=4))
- 
+"""
+for game in most_played_games:
+    print(json.dumps(game, indent=4))
+"""
 # Una vez obtenidos los 5 juegos mas jugados por el usuario, obtenemos los detalles del juego
 user_game_descriptions = []
 
 for game in most_played_games:
+    # Obtener los datos del juego
     game_details = steam.apps.get_app_details(int(game['appid']))
     result = game_details[str(game['appid'])]["data"]
+
+    # Obtener las descripciones de los géneros
+    game_details2 = steam.apps.get_app_details(int(game['appid']),
+                                              filters = 'genres')
+    genres = game_details2[str(game['appid'])]["data"]["genres"]
+    
     game_info = {
         "name": result["name"],
         "steam_appid": result["steam_appid"],
         "short_description": result["short_description"],
-        "header_image": result["header_image"]
+        "header_image": result["header_image"],
+        "genres": ", ".join(genre["description"] for genre in genres)
     } 
     user_game_descriptions.append(game_info)
 
-#for game in user_game_descriptions:
-#   print(json.dumps(game, indent=4))
+"""
+for game in user_game_descriptions:
+    print(json.dumps(game, indent=4))
+"""
