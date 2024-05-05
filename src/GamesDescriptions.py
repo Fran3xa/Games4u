@@ -1,53 +1,10 @@
 import openpyxl
 import os
-import re
-import string
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from nltk.stem import PorterStemmer
 
-# Inicializa el lematizador y el stemmer
-lemmatizer = WordNetLemmatizer()
-stemmer = PorterStemmer()
+from ProcesoText import preprocess_text
 
-# Función para remover comillas simples seguidas de caracteres hasta el siguiente espacio
-def remove_single_quotes(text):
-    pattern = r"'[^ ]*"
-    text = re.sub(pattern, '', text)
-    return text
 
-# Función para reemplazar caracteres especiales
-def replace_text(text):
-    text = text.replace('â€™', "'")
-    text = text.replace('â€‹.', "")
-    text = text.replace('â€‹', "")
-    text = text.replace('â€“', "")
-    text = text.replace('Â®', "")
-    text = text.replace('â€¦', " ")
-    text = text.replace('â€˜', "")
-    text = text.replace('â„¢', "")
-    text = text.replace('â€ ”', "")
-    text = text.replace('â “', "")
-    text = text.replace('.â€', "")
-    text = text.replace('â€', "")
-    text = text.replace('â€¢', "")
-    text = text.replace('â€œ', "")
-    text = text.replace('-', " ")
-    text = text.replace('_', " ")
-    text = text.replace('...', "")
-    text = remove_single_quotes(text)
-    return text
 
-# Función para preprocesar el texto
-def preprocess_text(text):
-    replaced_text = replace_text(text)
-    tokens = word_tokenize(replaced_text.lower())
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in tokens if token not in stop_words and token not in string.punctuation]
-    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
-    stemmed_tokens = [stemmer.stem(token) for token in lemmatized_tokens]
-    return ' '.join(stemmed_tokens)
 
 # Obtiene la ruta absoluta del directorio actual
 current_directory = os.path.dirname(__file__)

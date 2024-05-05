@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
@@ -33,6 +34,8 @@ df["Cluster"] = kmeans.labels_
 silhouette_avg = silhouette_score(X, kmeans.labels_)
 print(f"Coeficiente de silueta: {silhouette_avg}")
 
+joblib.dump(vectorizer, 'vectorizer.pkl')
+joblib.dump(kmeans, 'kmeans.pkl')
 # Reducción de dimensionalidad con PCA
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X.toarray())
