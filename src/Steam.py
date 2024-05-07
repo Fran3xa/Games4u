@@ -2,12 +2,12 @@ import joblib
 import os
 import json
 import pandas as pd
+import scipy.sparse as sp
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from steam_web_api import Steam
 from sklearn.decomposition import TruncatedSVD
 from ProcesoText import preprocess_text
-from EntrenaModelo import X_combined
 
 # Clave de Steam proporcionada para acceder a su API
 STEAM_KEY = 'E54AABAFEDCB6F054775D23856674223'
@@ -54,13 +54,19 @@ primer_juego = user_game_descriptions[0]
 # Cargar vectorizador y modelo de clustering
 vectorizer = joblib.load('vectorizer.pkl')
 kmeans = joblib.load('kmeans.pkl')
+hvectorizer = joblib.load('hashing_vectorizer.pkl')
+
 
 # Preprocesar la descripción del primer juego
 caracteristicas_transformadas = preprocess_text(primer_juego['short_description'])
+genero_primer_juego = primer_juego['genres']
 X = vectorizer.transform([caracteristicas_transformadas])
+genero_transformado = hvectorizer.transform([genero_primer_juego])
+caracteristicas_primer_juego = sp.hstack([X, genero_transformado])
+
 
 # Predicción del cluster del primer juego
-cluster = kmeans.predict(X_combined)
+cluster = kmeans.predict(caracteristicas_primer_juego)
 
 print(f"El juego {primer_juego['name']} pertenece al cluster {cluster[0]}")
 print(json.dumps(primer_juego, indent=4))

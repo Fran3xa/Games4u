@@ -7,6 +7,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import HashingVectorizer
+import scipy.sparse as sp
+
 
 # Cargar el archivo Excel con las descripciones procesadas
 current_directory = os.path.dirname(__file__)
@@ -31,12 +33,13 @@ hashing_vectorizer = HashingVectorizer(norm=None, alternate_sign=False)
 X_genres = hashing_vectorizer.fit_transform(df["Genres"])
 
 # Combinar características de texto y características de géneros
-import scipy.sparse as sp
 X_combined = sp.hstack([X_text, X_genres])
+print(f"Coeficiente de silueta,22222")
 
 # Entrenar el modelo de clustering (K-means)
-num_clusters = 500  # Puedes ajustar este valor según tus necesidades
+num_clusters = 370 # Puedes ajustar este valor según tus necesidades
 kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+print(X_combined.size)
 kmeans.fit(X_combined)
 
 # Asignar etiquetas de cluster a cada descripción
@@ -50,6 +53,9 @@ print(f"Coeficiente de silueta: {silhouette_avg}")
 joblib.dump(vectorizer, 'vectorizer.pkl')
 joblib.dump(hashing_vectorizer, 'hashing_vectorizer.pkl')
 joblib.dump(kmeans, 'kmeans.pkl')
+
+print(f"Coeficiente de silueta: {silhouette_avg}")
+
 
 # Reducción de dimensionalidad con TruncatedSVD
 svd = TruncatedSVD(n_components=2)
