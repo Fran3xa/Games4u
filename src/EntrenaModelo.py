@@ -7,27 +7,27 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 
-# Cargar el archivo Excel con las descripciones procesadas
+# Cargar el archivo Excel con los tags procesados
 current_directory = os.path.dirname(__file__)
 preprocessed_excel_path = os.path.join(current_directory, '..', 'dataset', 'games_processed.xlsx')
 df = pd.read_excel(preprocessed_excel_path)
 
 # Eliminar filas con valores np.nan
-df = df.dropna(subset=["Descripción procesada"])
+df = df.dropna(subset=["Tags procesados"])
 
-# Obtener las descripciones procesadas
-descriptions = df["Descripción procesada"].values
+# Obtener los tags procesados
+tags = df["Tags procesados"].values
 
 # Vectorización de texto utilizando TF-IDF
 vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(descriptions)
+X = vectorizer.fit_transform(tags)
 
 # Entrenar el modelo de clustering (K-means)
-num_clusters = 500  # Puedes ajustar este valor según tus necesidades
+num_clusters = 1250  # Puedes ajustar este valor según tus necesidades
 kmeans = KMeans(n_clusters=num_clusters, random_state=42)
 kmeans.fit(X)
 
-# Asignar etiquetas de cluster a cada descripción
+# Asignar etiquetas de cluster a cada tag
 df["Cluster"] = kmeans.labels_
 
 # Calcular el coeficiente de silueta para evaluar la calidad del clustering
