@@ -27,30 +27,82 @@
         </style>
     </head>
     <body>
-        <h1>Lista de Videojuegos</h1>
-        <form action="/recomendacion" method="post">
-            <select id="juegos" name="juegos_gustados" multiple size="10">
-                {% for videojuego in videojuegos %}
-                    <option value="{{ loop.index0 }}">{{ videojuego['Name'] }}</option>
-                {% endfor %}
-            </select>
+        <h1>Introduce tu id de usuario</h1>
+        <form id="user-form">
+            <label for="userid">ID del Usuario:</label><br>
+            <input type="text" id="userid" name="userid"><br>
+            <button id="load">Cargar</button>
+            <select id="juegos" multiple size="10"></select>
             <button type="button" id="agregar">Agregar a favoritos</button>
-            <select id="favoritos" name="juegos_favoritos" multiple size="10"></select>
-            <input type="submit" value="Enviar">
-        </form>
-        <script>
-            document.getElementById('agregar').addEventListener('click', function() {
-                var juegos = document.getElementById('juegos');
-                var favoritos = document.getElementById('favoritos');
-                for (var i = 0; i < juegos.options.length; i++) {
-                    var option = juegos.options[i];
-                    if (option.selected) {
-                        favoritos.options.add(new Option(option.text, option.value));
-                        juegos.remove(i);
-                        i--;
-                    }
-                }
+            <select id="favoritos" multiple size="10"></select>
+            <button id="save-recommendations">Guardar recomendaciones</button>
+
+          </form>
+          <div id="recommendations"></div>
+          
+          <script>
+          document.getElementById('load').addEventListener('click', function(event) {
+            event.preventDefault();
+          
+            var userid = document.getElementById('userid').value;
+          
+            fetch('/get_games', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: 'userid=' + encodeURIComponent(userid),
+            })
+            .then(response => response.json())
+            .then(data => {
+              var juegos = document.getElementById('juegos');
+              juegos.innerHTML = '';
+          
+                data.forEach(function(game) {
+                var option = document.createElement('option');
+                option.text = game.name;
+                option.value = JSON.stringify(game);
+                juegos.add(option);
+              });
             });
-        </script>
+          });
+
+            document.getElementById('agregar').addEventListener('click', function() {
+            var juegos = document.getElementById('juegos');
+            var favoritos = document.getElementById('favoritos');
+            for (var i = 0; i < juegos.options.length; i++) {
+                var option = juegos.options[i];
+                if (option.selected) {
+                favoritos.options.add(new Option(option.text, option.value));
+                juegos.remove(i);
+                i--;
+                }
+            }
+            });
+
+            document.getElementById('save-recommendations').addEventListener('click', function() {
+            var favoritos = document.getElementById('favoritos');
+            var games = Array.from(favoritos.options).map(option => JSON.parse(option.value));
+
+            fetch('/save_recommendations', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(games),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var recommendations = document.getElementById('recommendations');
+                recommendations.innerHTML = '';
+
+                Object.entries(data).forEach(function([game, recommendedGames]) {
+                var gameDiv = document.createElement('div');
+                gameDiv.textContent = game + ': ' + recommendedGames.join(', ');
+                recommendations.appendChild(gameDiv);
+                });
+            });
+            });
+          </script>
     </body>
 </html>
