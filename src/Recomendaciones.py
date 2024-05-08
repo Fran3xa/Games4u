@@ -37,7 +37,7 @@ def get_recommended_games(lista_juegos):
         juegos_combinados = juegos_combinados.drop_duplicates(subset=['Name'])
 
         # Seleccionar los juegos del mismo cluster hasta alcanzar la cantidad deseada
-        num_juegos_adicionales = 10
+        num_juegos_adicionales = 11  # Restar 1 para ajustar el número de juegos
         juegos_adicionales = mismo_cluster.sample(n=min(num_juegos_adicionales, len(mismo_cluster)))
 
         # Si la cantidad de juegos del mismo cluster es menor que la deseada,
@@ -47,12 +47,22 @@ def get_recommended_games(lista_juegos):
             otros_juegos = otros_clusters.sample(n=num_juegos_adicionales_faltantes)
             juegos_adicionales = pd.concat([juegos_adicionales, otros_juegos])
         
-        print(f"Juegos recomendados para {juego['name']}:")
+        # Almacenar nombres de juegos únicos temporalmente en un conjunto
+        juegos_unicos_temp = set()
 
-        # Imprimir el nombre de cada juego
+        # Agregar nombres de juegos del mismo cluster al conjunto temporal
         for _, recommendedGame in juegos_adicionales.iterrows():
-            recommended_games.append(recommendedGame['Name'])
-            
+            juegos_unicos_temp.add(recommendedGame['Name'])
+
+        # Eliminar el juego actual de la lista de recomendados
+        juegos_unicos_temp.discard(juego['name'])
+
+        print(f"Juegos recomendados para {juego['name']}:")
+        print(juegos_unicos_temp)  # Imprimir nombres únicos de juegos
+
+        # Agregar juegos únicos del conjunto temporal a la lista final
+        recommended_games.extend(list(juegos_unicos_temp))
+
     return recommended_games
 
 

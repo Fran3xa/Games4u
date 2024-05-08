@@ -30,9 +30,11 @@ def usuarioInfo():
             "steam_appid": game["steam_appid"],
             "short_description": game["short_description"],
             "header_image": game["header_image"],
-            "genres": game["genres"]
+            "genres": game["genres"],
+            "metacritic": game["metacritic"]
         }
         formatted_games.append(formatted_game)
+    formatted_games.sort(key=lambda x: x.get('metacritic', 0), reverse=True)
 
     formatted_users = []
     for user in user_info_list:
@@ -61,8 +63,13 @@ def save_recommendations():
 @app.route('/recomendacion', methods=['POST'])
 def recomendacion():
     selected_game = request.form.get('selected_game')
-    print(selected_game)
-    return render_template('recomendacion.html')
+    game = Steam.get_game_details_id(selected_game)
+    recommended_games = Recomendaciones.get_recommended_games(game)
+    recommended = []
+    for recommend in recommended_games:
+        recommended.append(Steam.get_game_details_name(recommend))
+    recommended.sort(key=lambda x: x.get('metacritic', 0), reverse=True)
+    return render_template('recomendacion.html', recommended_games = recommended)
 
 if __name__ == '__main__':
     app.run(debug=True)

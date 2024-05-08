@@ -11,6 +11,20 @@
 <body>
     <br>
     <h1 class="text-center">Juegos Recomendados</h1>
-    
+    <br>
+    <div class="d-flex flex-wrap justify-content-center">
+        {% for recommended_game in recommended_games %}
+        <div class="card" style="width: 18rem; margin-right: 10px; margin-bottom: 10px">
+            <img src="{{ recommended_game.header_image }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ recommended_game.name }}</h5>
+                <p class="card-text">{{ recommended_game.short_description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary btn-lg" onclick="goBack()">Buscar otra recomendación</button>
+    </div>
 </body>
 </html>

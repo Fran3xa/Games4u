@@ -5,6 +5,7 @@ import os
 import joblib
 from steam_web_api import Steam
 import pandas as pd
+from ProcesoText import replace_text
 
 # Leer el archivo Excel
 current_directory = os.path.dirname(__file__)
@@ -62,14 +63,64 @@ def get_most_played_games(user_id):
         game_details2 = steam.apps.get_app_details(int(game['appid']),
                                                 filters = 'genres')
         genres = game_details2[str(game['appid'])]["data"]["genres"]
+
+        game_details3 = steam.apps.get_app_details(int(game['appid']), filters='metacritic')
+        if str(game['appid']) in game_details3 and "metacritic" in game_details3[str(game['appid'])]["data"]:
+            metacritic = game_details3[str(game['appid'])]["data"]["metacritic"]["score"]
+        else:
+            metacritic = 0
         
         game_info = {
             "name": result["name"],
             "steam_appid": result["steam_appid"],
             "short_description": result["short_description"],
             "header_image": result["header_image"],
-            "genres": ", ".join(genre["description"] for genre in genres)
+            "genres": ", ".join(genre["description"] for genre in genres),
+            "metacritic": metacritic
         } 
         user_game_descriptions.append(game_info)
 
     return user_game_descriptions
+
+def get_game_details_id(gameId):
+    game_details = steam.apps.get_app_details(int(gameId))
+    result = game_details[str(gameId)]["data"]
+
+    game_details2 = steam.apps.get_app_details(int(gameId),
+                                                filters = 'genres')
+    genres = game_details2[str(gameId)]["data"]["genres"]
+
+    game_details3 = steam.apps.get_app_details(int(gameId), filters='metacritic')
+    if str(gameId) in game_details3 and "metacritic" in game_details3[str(gameId)]["data"]:
+        metacritic = game_details3[str(gameId)]["data"]["metacritic"]["score"]
+    else:
+        metacritic = 0
+
+    game_info = {
+            "name": result["name"],
+            "steam_appid": result["steam_appid"],
+            "short_description": result["short_description"],
+            "header_image": result["header_image"],
+            "genres": ", ".join(genre["description"] for genre in genres),
+            "metacritic": metacritic
+    }
+
+    game_complete = []
+    game_complete.append(game_info)
+
+    return game_complete
+
+def get_game_details_name(gameName):
+    gameName = replace_text(gameName)
+    game = steam.apps.search_games(gameName)
+    gameId = game['apps'][0]['id'][0]
+    result = get_game_details_id(gameId)
+    game_info = {
+        "name": result[0]["name"],
+        "steam_appid": result[0]["steam_appid"],
+        "short_description": result[0]["short_description"],
+        "header_image": result[0]["header_image"],
+        "genres": result[0]["genres"],
+        "metacritic": result[0]["metacritic"]
+    }
+    return game_info
