@@ -32,9 +32,18 @@ STEAM_KEY = 'E54AABAFEDCB6F054775D23856674223'
 
 steam = Steam(STEAM_KEY)
 
-#user_details = steam.users.get_user_details(STEAM_USER_ID2)
-def get_most_played_games(user_id):
+def get_user_details(user_id):
+    user_details = steam.users.get_user_details(user_id)
+    result = []
+    user_info = {
+        "steamid": user_details["player"]["steamid"],
+        "name": user_details["player"]["personaname"],
+        "avatar": user_details["player"]["avatar"]
+    }
+    result.append(user_info)
+    return result
 
+def get_most_played_games(user_id):
 
     owned_games = steam.users.get_owned_games(user_id)
 
@@ -44,7 +53,7 @@ def get_most_played_games(user_id):
 
     user_game_descriptions = []
 
-    for game in sorted_games:
+    for game in sorted_games[:5]:
         # Obtener los datos del juego
         game_details = steam.apps.get_app_details(int(game['appid']))
         result = game_details[str(game['appid'])]["data"]
@@ -64,4 +73,3 @@ def get_most_played_games(user_id):
         user_game_descriptions.append(game_info)
 
     return user_game_descriptions
-

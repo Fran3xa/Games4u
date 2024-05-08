@@ -10,7 +10,7 @@ def get_recommended_games(lista_juegos):
     kmeans = joblib.load('kmeans.pkl')
     current_directory = os.path.dirname(__file__)
     df = pd.read_excel(os.path.join(current_directory, '..', 'dataset', 'games_clustered.xlsx'))
-    recommended_games = {}
+    recommended_games = []
     for juego in lista_juegos:
         tags_obtenidos = obtener_tags_por_steam_appid(str(juego['name']))
 
@@ -18,8 +18,7 @@ def get_recommended_games(lista_juegos):
         cluster = kmeans.predict(X)
 
         print(f"El juego {juego['name']} pertenece al cluster {cluster[0]}")
-        juego = json.dumps(juego, indent=4)
-        print(juego)
+        print(json.dumps(juego, indent=4))
 
         # Obtener los juegos en el mismo cluster
         mismo_cluster = df[df['Cluster'] == cluster[0]]
@@ -47,13 +46,13 @@ def get_recommended_games(lista_juegos):
         if num_juegos_adicionales_faltantes > 0:
             otros_juegos = otros_clusters.sample(n=num_juegos_adicionales_faltantes)
             juegos_adicionales = pd.concat([juegos_adicionales, otros_juegos])
-
+        
         print(f"Juegos recomendados para {juego['name']}:")
-        # Imprimir el nombre de cada juego
-        juegoNombre= juego['name']
-        for _, recommendedGame in juegos_adicionales.iterrows():
-            recommended_games[juegoNombre]  = recommendedGame['Name']
 
+        # Imprimir el nombre de cada juego
+        for _, recommendedGame in juegos_adicionales.iterrows():
+            recommended_games.append(recommendedGame['Name'])
+            
     return recommended_games
 
 
