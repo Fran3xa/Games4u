@@ -67,7 +67,9 @@ def recomendacion():
     recommended_games = Recomendaciones.get_recommended_games(game)
     recommended = []
     for recommend in recommended_games:
-        recommended.append(Steam.get_game_details_name(recommend))
+        game_details = Steam.get_game_details_name(recommend)
+        if game_details is not None:
+            recommended.append(game_details)
     recommended.sort(key=lambda x: x.get('metacritic', 0), reverse=True)
     return render_template('recomendacion.html', recommended_games = recommended)
 

@@ -113,6 +113,8 @@ def get_game_details_id(gameId):
 def get_game_details_name(gameName):
     gameName = replace_text(gameName)
     game = steam.apps.search_games(gameName)
+    if not game['apps']:
+        return None
     gameId = game['apps'][0]['id'][0]
     result = get_game_details_id(gameId)
     game_info = {
