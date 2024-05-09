@@ -1,0 +1,40 @@
+body {
+    background: linear-gradient(90deg, #000000 0%, #024f6b 50%, #000000 100%);
+}
+
+h1 {
+    color: #fffefe;
+}
+form {
+    display: flex;
+    gap: 20px;
+}
+select, button, input[type="submit"] {
+    padding: 10px;
+}
+#juegos, #favoritos {
+    width: 200px;
+}
+#agregar {
+    align-self: center;
+}
+
+.logo-container {
+    text-align: center;
+}
+
+.col-3,
+.col-6 {
+  height: 100%;
+}
+
+#columnai,
+#columnad {
+  height: 100%;
+  width: 100%;
+  object-fit: cover; /* Para mantener la relación de aspecto de la imagen y rellenar todo el espacio disponible */
+}
+
+.card-body {
+    background-color: #f2f2f2;/* Azul Claro */
+}

@@ -29,8 +29,6 @@ def replace_text(text):
     text = text.replace('â€', "")
     text = text.replace('â€¢', "")
     text = text.replace('â€œ', "")
-    text = text.replace('-', " ")
-    text = text.replace('_', " ")
     text = text.replace('...', "")
     text = remove_single_quotes(text)
     return text
