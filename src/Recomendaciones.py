@@ -3,7 +3,7 @@ import os
 import joblib
 import pandas as pd
 
-from Steam import obtener_tags_por_steam_appid
+from Steam_utils import obtener_tags_por_steam_appid
 
 def get_recommended_games(lista_juegos):
     vectorizer = joblib.load('vectorizer.pkl')
@@ -14,7 +14,7 @@ def get_recommended_games(lista_juegos):
     for juego in lista_juegos:
         tags_obtenidos = obtener_tags_por_steam_appid(str(juego['name']))
 
-        X = vectorizer.transform([tags_obtenidos])
+        X = vectorizer.transform([str(tags_obtenidos)])
         cluster = kmeans.predict(X)
 
         print(f"El juego {juego['name']} pertenece al cluster {cluster[0]}")

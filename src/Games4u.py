@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, jsonify, url_for
-import Steam
+import Steam_utils as Steam
 import json
 import Recomendaciones
 
