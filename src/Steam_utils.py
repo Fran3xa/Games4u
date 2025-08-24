@@ -24,12 +24,16 @@ def obtener_tags_por_steam_appid(steam_appid):
         return None
 
 # Clave de Steam proporcionado para acceder a su API
-STEAM_KEY = 'E54AABAFEDCB6F054775D23856674223'
+# Leer la clave de Steam desde local.properties
+def get_steam_key():
+    key_path = os.path.join(current_directory, '..', 'local.properties')
+    with open(key_path, 'r') as f:
+        for line in f:
+            if line.startswith('STEAM_KEY='):
+                return line.strip().split('=', 1)[1]
+    raise ValueError('STEAM_KEY no encontrado en local.properties')
 
-# Id del usuario de Steam, este tiene que tener el perfil publico para poder usarlo
-#STEAM_USER_ID = '76561199028403880'
-# Este usuario contiene una biblioteca mas extensa de videojuegos jugados
-#STEAM_USER_ID2 = '76561198118719571'
+STEAM_KEY = get_steam_key()
 
 steam = Steam(STEAM_KEY)
 
